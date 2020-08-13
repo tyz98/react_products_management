@@ -57,6 +57,22 @@ class Login extends Component {
                 {
                   required: true,
                   message: '请输入密码!',
+                }, 
+                {
+                  validator:(rule, value, callback)=>{
+                    try {
+                      if (value.length < 4) {
+                        return Promise.reject('密码不可少于4位');
+                      } else if (value.length > 12) {
+                        return Promise.reject('密码不可超过12位');
+                      } else if (!(/^\w+$/.test(value))) {
+                        return Promise.reject('密码只能由数字、字母、下划线组成');
+                      } 
+                      return Promise.resolve();
+                    } catch(err) {
+                      callback(err);
+                    }
+                  }
                 },
               ]}
             >
