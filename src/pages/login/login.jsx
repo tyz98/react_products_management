@@ -32,6 +32,18 @@ class Login extends Component {
                   required: true,
                   message: '请输入用户名!',
                 },
+                {
+                  max: 12,
+                  message:'用户名长度不可超过12位'
+                },
+                {
+                  min: 4,
+                  message:'用户名长度不可少于4位'
+                },
+                {
+                  pattern:/^\w+$/,
+                  message:'用户名只能由数字、字母、下划线组成'
+                },
               ]}
             >
               <Input
