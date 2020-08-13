@@ -7,7 +7,10 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 class Login extends Component {
   render() {
     const onFinish = values => {
-      console.log('表单的值为: ', values);
+      console.log('可发ajax请求，表单的值为: ', values);
+    };
+    const onFinishFailed = ({values, errorFields, outOfDate}) => {
+      console.log('表单数据验证失败',values,errorFields,outOfDate);
     };
     return (
       <div className='login'>
@@ -18,12 +21,10 @@ class Login extends Component {
         <section>
           <h1>用户登录</h1>
           <Form
-            name="normal_login"
+            name="login"
             className="login-form"
-            initialValues={{
-              remember: true,
-            }}
-            onFinish={onFinish}
+            onFinish={onFinish} 
+            onFinishFailed={onFinishFailed}
           >
             <Form.Item
               name="username"
@@ -34,15 +35,15 @@ class Login extends Component {
                 },
                 {
                   max: 12,
-                  message:'用户名长度不可超过12位'
+                  message:'用户名长度不可超过12位!'
                 },
                 {
                   min: 4,
-                  message:'用户名长度不可少于4位'
+                  message:'用户名长度不可少于4位!'
                 },
                 {
                   pattern:/^\w+$/,
-                  message:'用户名只能由数字、字母、下划线组成'
+                  message:'用户名只能由数字、字母、下划线组成!'
                 },
               ]}
             >
@@ -55,18 +56,16 @@ class Login extends Component {
               name="password"
               rules={[
                 {
-                  required: true,
-                  message: '请输入密码!',
-                }, 
-                {
                   validator:(rule, value, callback)=>{
                     try {
-                      if (value.length < 4) {
-                        return Promise.reject('密码不可少于4位');
-                      } else if (value.length > 12) {
-                        return Promise.reject('密码不可超过12位');
+                      if (!value) {
+                        return Promise.reject('密码不能为空！')
                       } else if (!(/^\w+$/.test(value))) {
-                        return Promise.reject('密码只能由数字、字母、下划线组成');
+                        return Promise.reject('密码只能由数字、字母、下划线组成！');
+                      } else if (value.length < 4) {
+                        return Promise.reject('密码不可少于4位！');
+                      } else if (value.length > 12) {
+                        return Promise.reject('密码不可超过12位！');
                       } 
                       return Promise.resolve();
                     } catch(err) {
