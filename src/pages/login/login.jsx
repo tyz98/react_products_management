@@ -48,7 +48,7 @@ class Login extends Component {
               ]}
             >
               <Input
-                prefix={<UserOutlined className="site-form-item-icon" />}
+                prefix={<UserOutlined className="site-form-item-icon" style={{color:'rgba(0,0,0,.25)'}}/>}
                 placeholder="用户名" 
               />
             </Form.Item>
@@ -76,7 +76,7 @@ class Login extends Component {
               ]}
             >
               <Input
-                prefix={<LockOutlined className="site-form-item-icon" />}
+                prefix={<LockOutlined className="site-form-item-icon" style={{color:'rgba(0,0,0,.25)'}}/>}
                 type="password"
                 placeholder="密码"
               />
