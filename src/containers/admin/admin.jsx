@@ -1,23 +1,21 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
-import {createDemo1Action, createDemo2Action} from '../../redux/actions/test_action'
+//import {createDemo1Action, createDemo2Action} from '../../redux/actions/login_action'
 class Admin extends Component {
   componentDidMount() {
-    console.log(this.props);
+    console.log(this.props.userInfo);
   }
   render() {
+    const {userInfo} = this.props;
     return (
       <div>
-        admin
+        Hello, {userInfo.user.username}!
       </div>
     );
   }
 }
 
 export default connect(
-  state => ({test:state.test}),
-  {
-    demo1:createDemo1Action,
-    demo2:createDemo2Action,
-  }
+  state => ({userInfo:state.userInfo}),
+  {}
 )(Admin);

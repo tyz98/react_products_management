@@ -4,7 +4,7 @@ import logo from './imgs/logo.png'
 import { Form, Input, Button, message} from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import {connect} from 'react-redux'
-import {createDemo1Action, createDemo2Action} from '../../redux/actions/test_action'
+import {createSaveUserInfoAction} from '../../redux/actions/login_action'
 import {reqLogin} from '../../api'
 
 class Login extends Component {
@@ -17,7 +17,13 @@ class Login extends Component {
       //这里只定义响应成功返回的回调，响应失败的在响应拦截器中处理
       const response = await reqLogin(username,password);
       if (response.status === 0) {
-        console.log('登录成功，可以跳转到admin了')
+        console.log('登录成功，可以跳转到admin了',response.data);
+        //save userInfo to redux(store)
+        console.log('先把用户信息存到store')
+        this.props.saveUserInfo(response.data);
+        //go to /admin
+        console.log('再用replace跳转')
+        this.props.history.push('/admin');
       } else {
         message.warning('用户名或密码输入不正确，请重新输入',1);
       }
@@ -112,7 +118,6 @@ class Login extends Component {
 export default connect(
   state => ({test:state.test}),
   {
-    demo1:createDemo1Action,
-    demo2:createDemo2Action,
+    saveUserInfo:createSaveUserInfoAction,
   }
 )(Login)

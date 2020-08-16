@@ -5,7 +5,6 @@ import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
 const instance = axios.create({
-  //baseURL: 'https://localhost:4000/',
   timeout: 4000,
 });
 
