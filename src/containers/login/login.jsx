@@ -1,18 +1,28 @@
 import React, { Component } from 'react';
 import './css/login.less'
 import logo from './imgs/logo.png'
-import { Form, Input, Button} from 'antd';
+import { Form, Input, Button, message} from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import {connect} from 'react-redux'
 import {createDemo1Action, createDemo2Action} from '../../redux/actions/test_action'
+import {reqLogin} from '../../api'
 
 class Login extends Component {
   componentDidMount() {
     console.log(this.props);
   }
   render() {
-    const onFinish = values => {
-      console.log('可发ajax请求，表单的值为: ', values);
+    const onFinish = async values => {
+      const {username, password} = values;
+      //这里只定义响应成功返回的回调，响应失败的在响应拦截器中处理
+      const response = await reqLogin(username,password);
+      if (response.status === 0) {
+        console.log('登录成功，可以跳转到admin了')
+      } else {
+        message.warning('用户名或密码输入不正确，请重新输入',1);
+      }
+
+     // console.log('可发ajax请求，表单的值为: ', values);
     };
     const onFinishFailed = ({values, errorFields, outOfDate}) => {
       console.log('表单数据验证失败',values,errorFields,outOfDate);
