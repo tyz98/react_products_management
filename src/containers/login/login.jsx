@@ -1,17 +1,22 @@
 import React, { Component } from 'react';
-import './css/login.less'
-import logo from './imgs/logo.png'
+import {Redirect} from 'react-router-dom'
 import { Form, Input, Button, message} from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import {connect} from 'react-redux'
 import {createSaveUserInfoAction} from '../../redux/actions/login_action'
 import {reqLogin} from '../../api'
+import './css/login.less'
+import logo from './imgs/logo.png'
 
 class Login extends Component {
   componentDidMount() {
     console.log(this.props);
   }
   render() {
+    //若已经登录，则自动跳转到/admin
+    if (this.props.isLogin) {
+      return <Redirect to='/admin'/>;
+    }
     const onFinish = async values => {
       const {username, password} = values;
       //这里只定义响应成功返回的回调，响应失败的在响应拦截器中处理
@@ -116,7 +121,7 @@ class Login extends Component {
 }
 
 export default connect(
-  state => ({}),
+  state => ({isLogin:state.userInfo.isLogin}),
   {
     saveUserInfo:createSaveUserInfoAction,
   }
