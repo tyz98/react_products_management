@@ -13,9 +13,8 @@ class Admin extends Component {
   }
 
   render() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    const token = localStorage.getItem('token');
-    if (user && token) {
+    const {user,isLogin} = this.props.userInfo;
+    if (isLogin) {
       return (
         <div>
           <div>
