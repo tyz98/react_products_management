@@ -3,8 +3,13 @@ import './css/login.less'
 import logo from './imgs/logo.png'
 import { Form, Input, Button} from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import {connect} from 'react-redux'
+import {createDemo1Action, createDemo2Action} from '../../redux/actions/test_action'
 
 class Login extends Component {
+  componentDidMount() {
+    console.log(this.props);
+  }
   render() {
     const onFinish = values => {
       console.log('可发ajax请求，表单的值为: ', values);
@@ -94,4 +99,10 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default connect(
+  state => ({test:state.test}),
+  {
+    demo1:createDemo1Action,
+    demo2:createDemo2Action,
+  }
+)(Login)
