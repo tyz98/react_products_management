@@ -23,7 +23,7 @@ class Login extends Component {
         this.props.saveUserInfo(response.data);
         //go to /admin
         console.log('再用replace跳转')
-        this.props.history.push('/admin');
+        this.props.history.replace('/admin');
       } else {
         message.warning('用户名或密码输入不正确，请重新输入',1);
       }
@@ -116,7 +116,7 @@ class Login extends Component {
 }
 
 export default connect(
-  state => ({test:state.test}),
+  state => ({}),
   {
     saveUserInfo:createSaveUserInfoAction,
   }
