@@ -3,6 +3,10 @@ import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
 import {createDeleteUserInfoAction} from '../../redux/actions/login_action'
 
+@connect(
+  state => ({userInfo:state.userInfo}),
+  {deleteUserInfo:createDeleteUserInfoAction}
+)
 class Admin extends Component {
   componentDidMount() {
     console.log(this.props.userInfo);
@@ -29,7 +33,4 @@ class Admin extends Component {
   }
 }
 
-export default connect(
-  state => ({userInfo:state.userInfo}),
-  {deleteUserInfo:createDeleteUserInfoAction}
-)(Admin);
+export default Admin;

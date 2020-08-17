@@ -8,6 +8,12 @@ import {reqLogin} from '../../api'
 import './css/login.less'
 import logo from './imgs/logo.png'
 
+connect(
+  state => ({isLogin:state.userInfo.isLogin}),
+  {
+    saveUserInfo:createSaveUserInfoAction,
+  }
+)
 class Login extends Component {
   componentDidMount() {
     console.log(this.props);
@@ -120,9 +126,4 @@ class Login extends Component {
   }
 }
 
-export default connect(
-  state => ({isLogin:state.userInfo.isLogin}),
-  {
-    saveUserInfo:createSaveUserInfoAction,
-  }
-)(Login)
+export default Login
