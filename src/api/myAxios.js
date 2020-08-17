@@ -2,6 +2,7 @@ import axios from 'axios'
 import qs from 'querystring'
 import {message} from 'antd'
 import NProgress from 'nprogress'
+import store from '../redux/store'
 import 'nprogress/nprogress.css'
 
 const instance = axios.create({
@@ -11,7 +12,13 @@ const instance = axios.create({
 instance.interceptors.request.use((config)=>{
   //console.log('请求拦截器config',config);
   NProgress.start();
+  //add authorization(headers)
+  const {token} = store.getState().userInfo;
+  if (token) {
+    config.headers.Authorization = 'tyz98_'+token;
+  }
   const {method,data} = config;
+  //convert to urlencoded
   if (method.toLowerCase() === 'post' && data instanceof Object) {
     config.data = qs.stringify(data);
   }

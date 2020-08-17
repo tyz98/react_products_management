@@ -5,3 +5,5 @@ export const reqLogin = (username, password) => {
   //console.log(username,password)
   return myAxios.post(`${BASE_URL}/login`, {username,password});
 }
+
+export const reqCategoryList = () => myAxios.get(`${BASE_URL}/manage/category/list`)

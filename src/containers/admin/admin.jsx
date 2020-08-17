@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
 import {createDeleteUserInfoAction} from '../../redux/actions/login_action'
+import {reqCategoryList} from '../../api'
 
 @connect(
   state => ({userInfo:state.userInfo}),
@@ -16,6 +17,11 @@ class Admin extends Component {
     this.props.deleteUserInfo();
   }
 
+  catogories = async() => {
+    let categoryList = await reqCategoryList();
+    console.log(categoryList);
+  }
+
   render() {
     const {user,isLogin} = this.props.userInfo;
     if (isLogin) {
@@ -25,6 +31,7 @@ class Admin extends Component {
             Hello, {user.username}!
           </div>
           <button onClick={this.logout}>退出登录</button>
+          <button onClick={this.catogories}>获取商品列表</button>
         </div>
       );
     }
