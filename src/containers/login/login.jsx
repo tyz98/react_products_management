@@ -8,7 +8,7 @@ import {reqLogin} from '../../api'
 import './css/login.less'
 import logo from './imgs/logo.png'
 
-connect(
+@connect(
   state => ({isLogin:state.userInfo.isLogin}),
   {
     saveUserInfo:createSaveUserInfoAction,
