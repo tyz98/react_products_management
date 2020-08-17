@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import {Switch, Route} from 'react-router-dom'
+import {Switch, Route, Redirect} from 'react-router-dom'
 //import {Button, Input} from 'antd';
 //配置按需引入后不需这样引入全部css，根据上一行antd的组件可以直接引入需要的css
 //import "antd/dist/antd.css";
@@ -13,6 +13,7 @@ export default class App extends Component {
         <Switch>
           <Route path='/login' component={Login}/>
           <Route path='/admin' component={Admin}/>
+          <Redirect to='/admin'/>
         </Switch>
       </div>
     )
