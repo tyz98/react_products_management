@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import {Redirect} from 'react-router-dom'
+import { Layout } from 'antd';
 import {createDeleteUserInfoAction} from '../../redux/actions/login_action'
 import {reqCategoryList} from '../../api'
+import Header from './header/header'
+import './css/admin.less'
 
 @connect(
   state => ({userInfo:state.userInfo}),
@@ -23,16 +26,18 @@ class Admin extends Component {
   }
 
   render() {
-    const {user,isLogin} = this.props.userInfo;
+    const {isLogin} = this.props.userInfo;
+    const {Footer, Sider, Content} = Layout;
     if (isLogin) {
       return (
-        <div>
-          <div>
-            Hello, {user.username}!
-          </div>
-          <button onClick={this.logout}>退出登录</button>
-          <button onClick={this.catogories}>获取商品列表</button>
-        </div>
+        <Layout className='admin'>
+          <Sider className='sider'>Sider</Sider>
+          <Layout>
+            <Header/>
+            <Content className='content'>Content</Content>
+            <Footer className='footer'>推荐使用谷歌浏览器</Footer>
+          </Layout>
+        </Layout>
       );
     }
     //const {userInfo} = this.props;
