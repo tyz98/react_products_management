@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import {Redirect, Switch, Route} from 'react-router-dom'
 import { Layout, Button } from 'antd';
-import {createDeleteUserInfoAction} from '../../redux/actions/login_action'
 import {reqCategoryList} from '../../api'
 import Header from './header/header'
 import Home from '../../components/home/home'
@@ -18,16 +17,14 @@ const {Footer, Sider, Content} = Layout;
 
 @connect(
   state => ({userInfo:state.userInfo}),
-  {deleteUserInfo:createDeleteUserInfoAction}
+  {}
 )
 class Admin extends Component {
   componentDidMount() {
     console.log(this.props.userInfo);
   }
 
-  logout = () => {
-    this.props.deleteUserInfo();
-  }
+
 
   categories = async() => {
     console.log('开始获取商品列表')
