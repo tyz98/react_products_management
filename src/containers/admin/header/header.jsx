@@ -25,7 +25,7 @@ class Header extends Component {
       this.setState({isFullScreen});
     })
     //change time every 1 second
-    setInterval(() => {
+    this.timerID = setInterval(() => {
       this.setState({time:dayjs().format('YYYY-MM-DD HH:mm:ss')});
     }, 1000);
     //request weather
@@ -34,6 +34,10 @@ class Header extends Component {
     this.setState({weather:weatherInfo.wea,lowTem:weatherInfo.tem2,highTem:weatherInfo.tem1})
   }
 
+  componentWillUnmount() {
+    clearInterval(this.timerID);
+  }
+  
   //toggle full screen(button onclick)
   toggleScreen = () => {
     if (screenfull.isEnabled) {
