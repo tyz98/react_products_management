@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import {Redirect, Switch, Route} from 'react-router-dom'
-import { Layout } from 'antd';
+import { Layout, Button } from 'antd';
 import {createDeleteUserInfoAction} from '../../redux/actions/login_action'
 import {reqCategoryList} from '../../api'
 import Header from './header/header'
@@ -29,7 +29,8 @@ class Admin extends Component {
     this.props.deleteUserInfo();
   }
 
-  catogories = async() => {
+  categories = async() => {
+    console.log('开始获取商品列表')
     let categoryList = await reqCategoryList();
     console.log(categoryList);
   }
@@ -55,7 +56,10 @@ class Admin extends Component {
                 <Redirect to="/admin/home"/>
               </Switch>
             </Content>
-            <Footer className='footer'>推荐使用谷歌浏览器</Footer>
+            <Footer className='footer'>推荐使用谷歌浏览器
+            <Button onClick={this.categories}>获取商品列表</Button>
+            </Footer>
+            
           </Layout>
         </Layout>
       );

@@ -3,6 +3,7 @@ import qs from 'querystring'
 import {message} from 'antd'
 import NProgress from 'nprogress'
 import store from '../redux/store'
+import {createDeleteUserInfoAction} from '../redux/actions/login_action'
 import 'nprogress/nprogress.css'
 
 const instance = axios.create({
@@ -10,7 +11,7 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use((config)=>{
-  //console.log('请求拦截器config',config);
+  console.log('请求拦截器config',config);
   NProgress.start();
   //add authorization(headers)
   const {token} = store.getState().userInfo;
@@ -22,6 +23,7 @@ instance.interceptors.request.use((config)=>{
   if (method.toLowerCase() === 'post' && data instanceof Object) {
     config.data = qs.stringify(data);
   }
+  console.log('请求拦截器config',config);
   return config;
 });
 
@@ -30,9 +32,14 @@ instance.interceptors.response.use((response)=>{
   NProgress.done();
   return response.data;
 },(err)=>{
-  //console.log('响应拦截器err',err.message);
+  console.log('响应拦截器err',err.message);
   NProgress.done();
-  message.error('发送请求失败,'+err.message, 1);
+  if (err.response && err.response.status === 401) {//if unauthorization, /login
+    store.dispatch(createDeleteUserInfoAction());
+    message.error('身份失效或过期，请重新登录', 1);
+  } else {
+    message.error('发送请求失败,'+err.message, 1);
+  }
   //中断promise
   return new Promise(()=>{});
 });
