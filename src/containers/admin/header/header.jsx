@@ -3,6 +3,7 @@ import {Button, Modal} from 'antd'
 import {FullscreenOutlined, FullscreenExitOutlined, ExclamationCircleOutlined} from '@ant-design/icons'
 import screenfull from 'screenfull'
 import {connect} from 'react-redux'
+import dayjs from 'dayjs'
 import {createDeleteUserInfoAction} from '../../../redux/actions/login_action'
 import './css/header.less'
 const { confirm } = Modal;
@@ -22,6 +23,10 @@ class Header extends Component {
       let isFullScreen = !this.state.isFullScreen;
       this.setState({isFullScreen});
     })
+    //change time every 1 second
+    setInterval(() => {
+      this.setState({time:dayjs().format('YYYY-MM-DD HH:mm:ss')});
+    }, 1000);
   }
 
   //toggle full screen(button onclick)
@@ -49,11 +54,12 @@ class Header extends Component {
 
   render() {
     let {user} = this.props.userInfo;
+    let {time, isFullScreen} = this.state;
     return (
       <header className='header'>
         <div className='header-top'>
           <Button size='small' onClick={this.toggleScreen}>
-            {this.state.isFullScreen ? <FullscreenExitOutlined />:<FullscreenOutlined />}
+            {isFullScreen ? <FullscreenExitOutlined />:<FullscreenOutlined />}
           </Button>
           <span className='welcome'>欢迎，{user.username}</span>
           <Button type="link" onClick={this.logout}>退出</Button>
@@ -61,7 +67,7 @@ class Header extends Component {
         <div className='header-bottom'>
           <div className="title">柱状图</div>
           <div className="today">
-            <span className='time'>2020-8-18 09:48:12</span>
+    <span className='time'>{time}</span>
             <img src="http://api.map.baidu.com/images/weather/day/qing.png" alt="天气图标"/>
             <span className='weather'>晴</span>
           </div>
