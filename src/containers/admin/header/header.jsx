@@ -3,12 +3,14 @@ import {Button, Modal} from 'antd'
 import {FullscreenOutlined, FullscreenExitOutlined, ExclamationCircleOutlined} from '@ant-design/icons'
 import screenfull from 'screenfull'
 import {connect} from 'react-redux'
+import {withRouter} from 'react-router-dom'
 import dayjs from 'dayjs'
 import {createDeleteUserInfoAction} from '../../../redux/actions/login_action'
 import {reqWeather} from '../../../api'
 import './css/header.less'
 const { confirm } = Modal;
 
+@withRouter
 @connect(
   state=>({userInfo:state.userInfo}),
   {deleteUserInfo:createDeleteUserInfoAction}
@@ -37,7 +39,7 @@ class Header extends Component {
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
-  
+
   //toggle full screen(button onclick)
   toggleScreen = () => {
     if (screenfull.isEnabled) {
@@ -74,7 +76,9 @@ class Header extends Component {
           <Button type="link" onClick={this.logout}>退出</Button>
         </div>
         <div className='header-bottom'>
-          <div className="title">柱状图</div>
+          <div className="title">
+            {this.props.location.pathname}
+          </div>
           <div className="today">
           <span className='time'>{time}</span>
           <span className='weather'>{weather} {lowTem}~{highTem}℃</span>

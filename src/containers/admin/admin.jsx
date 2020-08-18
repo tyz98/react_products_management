@@ -38,7 +38,7 @@ class Admin extends Component {
         <Layout className='admin'>
           <Sider className='sider'>Sider</Sider>
           <Layout>
-            <Header/>
+            <Header />
             <Content className='content'>
               <Switch>
                 <Route path="/admin/home" component={Home}/>
