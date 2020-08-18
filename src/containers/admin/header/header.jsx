@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import dayjs from 'dayjs'
 import {createDeleteUserInfoAction} from '../../../redux/actions/login_action'
-import {reqWeather} from '../../../api'
+//import {reqWeather} from '../../../api'
 import './css/header.less'
 const { confirm } = Modal;
 
@@ -30,10 +30,11 @@ class Header extends Component {
     this.timerID = setInterval(() => {
       this.setState({time:dayjs().format('YYYY-MM-DD HH:mm:ss')});
     }, 1000);
-    //request weather
-    let weatherInfo = await reqWeather();
-    console.log(weatherInfo)
-    this.setState({weather:weatherInfo.wea,lowTem:weatherInfo.tem2,highTem:weatherInfo.tem1})
+    
+    // //request weather
+    // let weatherInfo = await reqWeather();
+    // console.log(weatherInfo)
+    // this.setState({weather:weatherInfo.wea,lowTem:weatherInfo.tem2,highTem:weatherInfo.tem1})
   }
 
   componentWillUnmount() {

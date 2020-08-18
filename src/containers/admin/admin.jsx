@@ -4,6 +4,7 @@ import {Redirect, Switch, Route} from 'react-router-dom'
 import { Layout, Button } from 'antd';
 import {reqCategoryList} from '../../api'
 import Header from './header/header'
+import LeftNav from './left_nav/left_nav'
 import Home from '../../components/home/home'
 import Category from '../category/category'
 import Product from '../product/product'
@@ -36,7 +37,9 @@ class Admin extends Component {
     if (isLogin) {
       return (
         <Layout className='admin'>
-          <Sider className='sider'>Sider</Sider>
+          <Sider className='sider'>
+            <LeftNav/>
+          </Sider>
           <Layout>
             <Header />
             <Content className='content'>
