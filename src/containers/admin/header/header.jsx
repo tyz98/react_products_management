@@ -1,13 +1,32 @@
 import React, { Component } from 'react';
 import {Button} from 'antd'
-import {FullscreenOutlined} from '@ant-design/icons'
+import {FullscreenOutlined, FullscreenExitOutlined} from '@ant-design/icons'
+import screenfull from 'screenfull'
 import './css/header.less'
 class Header extends Component {
+  state = {
+    isFullScreen:false,
+  }
+
+  toggleScreen = () => {
+    if (screenfull.isEnabled) {
+      screenfull.toggle();
+    }
+  }
+
+  componentDidMount() {
+    screenfull.on('change',()=>{
+      let isFullScreen = !this.state.isFullScreen;
+      this.setState({isFullScreen});
+    })
+  }
   render() {
     return (
       <header className='header'>
         <div className='header-top'>
-          <Button size='small'><FullscreenOutlined /></Button>
+          <Button size='small' onClick={this.toggleScreen}>
+            {this.state.isFullScreen ? <FullscreenExitOutlined />:<FullscreenOutlined />}
+          </Button>
           <span className='welcome'>欢迎，username</span>
           <Button type="link">退出</Button>
         </div>

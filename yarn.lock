@@ -383,6 +383,15 @@
     "@babel/helper-plugin-utils" "^7.8.3"
     "@babel/plugin-syntax-decorators" "^7.8.3"
 
+"@babel/plugin-proposal-decorators@^7.10.5":
+  version "7.10.5"
+  resolved "https://registry.npm.taobao.org/@babel/plugin-proposal-decorators/download/@babel/plugin-proposal-decorators-7.10.5.tgz?cache=0&sync_timestamp=1594749164662&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40babel%2Fplugin-proposal-decorators%2Fdownload%2F%40babel%2Fplugin-proposal-decorators-7.10.5.tgz#42898bba478bc4b1ae242a703a953a7ad350ffb4"
+  integrity sha1-QomLukeLxLGuJCpwOpU6etNQ/7Q=
+  dependencies:
+    "@babel/helper-create-class-features-plugin" "^7.10.5"
+    "@babel/helper-plugin-utils" "^7.10.4"
+    "@babel/plugin-syntax-decorators" "^7.10.4"
+
 "@babel/plugin-proposal-dynamic-import@^7.10.4", "@babel/plugin-proposal-dynamic-import@^7.8.3":
   version "7.10.4"
   resolved "https://registry.npm.taobao.org/@babel/plugin-proposal-dynamic-import/download/@babel/plugin-proposal-dynamic-import-7.10.4.tgz?cache=0&sync_timestamp=1593521117836&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40babel%2Fplugin-proposal-dynamic-import%2Fdownload%2F%40babel%2Fplugin-proposal-dynamic-import-7.10.4.tgz#ba57a26cb98b37741e9d5bca1b8b0ddf8291f17e"
@@ -511,7 +520,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.10.4"
 
-"@babel/plugin-syntax-decorators@^7.8.3":
+"@babel/plugin-syntax-decorators@^7.10.4", "@babel/plugin-syntax-decorators@^7.8.3":
   version "7.10.4"
   resolved "https://registry.npm.taobao.org/@babel/plugin-syntax-decorators/download/@babel/plugin-syntax-decorators-7.10.4.tgz?cache=0&sync_timestamp=1593521120720&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2F%40babel%2Fplugin-syntax-decorators%2Fdownload%2F%40babel%2Fplugin-syntax-decorators-7.10.4.tgz#6853085b2c429f9d322d02f5a635018cdeb2360c"
   integrity sha1-aFMIWyxCn50yLQL1pjUBjN6yNgw=
@@ -9956,6 +9965,11 @@ schema-utils@^2.5.0, schema-utils@^2.6.0, schema-utils@^2.6.1, schema-utils@^2.6
     "@types/json-schema" "^7.0.4"
     ajv "^6.12.2"
     ajv-keywords "^3.4.1"
+
+screenfull@^5.0.2:
+  version "5.0.2"
+  resolved "https://registry.npm.taobao.org/screenfull/download/screenfull-5.0.2.tgz#b9acdcf1ec676a948674df5cd0ff66b902b0bed7"
+  integrity sha1-uazc8exnapSGdN9c0P9muQKwvtc=
 
 scroll-into-view-if-needed@^2.2.25:
   version "2.2.25"
