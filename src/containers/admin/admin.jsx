@@ -27,7 +27,6 @@ class Admin extends Component {
 
 
   categories = async() => {
-    console.log('开始获取商品列表')
     let categoryList = await reqCategoryList();
     console.log(categoryList);
   }
