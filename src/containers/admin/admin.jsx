@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {connect} from 'react-redux'
 import {Redirect, Switch, Route} from 'react-router-dom'
-import { Layout, Button } from 'antd';
+import { Layout } from 'antd';
 import {reqCategoryList} from '../../api'
 import Header from './header/header'
 import LeftNav from './left_nav/left_nav'
