@@ -57,9 +57,7 @@ class Admin extends Component {
                 <Redirect to="/admin/home"/>
               </Switch>
             </Content>
-            <Footer className='footer'>推荐使用谷歌浏览器
-            <Button onClick={this.categories}>获取商品列表</Button>
-            </Footer>
+            <Footer className='footer'>推荐使用谷歌浏览器</Footer>
             
           </Layout>
         </Layout>
