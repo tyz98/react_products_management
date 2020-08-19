@@ -8,8 +8,6 @@ export const reqLogin = (username, password) => {
   return myAxios.post(`${BASE_URL}/login`, {username,password});
 }
 
-export const reqCategoryList = () => myAxios.get(`${BASE_URL}/manage/category/list`);
-
 export const reqWeather = () => {
   return new Promise((resolve,reject)=>{
     jsonp(`https://yiketianqi.com/api?version=${WEATHER_VERSION}&appid=${WEATHER_ID}&appsecret=${WEATHER_SECRET}&cityid=${WEATHER_CITY}`,{},
@@ -23,3 +21,9 @@ export const reqWeather = () => {
     });
   })
 }
+
+export const reqCategoryList = () => myAxios.get(`${BASE_URL}/manage/category/list`);
+
+export const reqCategoryAdd = (value) => myAxios.post(`${BASE_URL}/manage/category/add`,{categoryName:value});
+
+export const reqCategoryUpdate = (categoryId, categoryName) => myAxios.post(`${BASE_URL}/manage/category/update`,{categoryId, categoryName});
