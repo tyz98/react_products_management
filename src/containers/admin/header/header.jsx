@@ -6,14 +6,17 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router-dom'
 import dayjs from 'dayjs'
 import {createDeleteUserInfoAction} from '../../../redux/actions/login_action'
+import {createDeleteTitleAction} from '../../../redux/actions/menu_action'
+import menuList from '../../../config/menu-config'
 //import {reqWeather} from '../../../api'
 import './css/header.less'
 const { confirm } = Modal;
 
 @withRouter
 @connect(
-  state=>({userInfo:state.userInfo}),
-  {deleteUserInfo:createDeleteUserInfoAction}
+  state=>({userInfo:state.userInfo, title:state.menu.title}),
+  {deleteUserInfo:createDeleteUserInfoAction,
+  deleteTitle:createDeleteTitleAction}
 )
 class Header extends Component {
   state = {
@@ -35,11 +38,39 @@ class Header extends Component {
     // let weatherInfo = await reqWeather();
     // console.log(weatherInfo)
     // this.setState({weather:weatherInfo.wea,lowTem:weatherInfo.tem2,highTem:weatherInfo.tem1})
+
+    //get title
+    let title = this.getTitle();
+    this.setState({title});
   }
 
   componentWillUnmount() {
     clearInterval(this.timerID);
   }
+
+  getTitle = () => {
+    const findTitle = function (list,key) {
+      let title = '';
+      list.forEach((item)=>{
+        if (title) {
+          return;
+        } 
+        if (item.children) {
+          title = findTitle(item.children, key);
+        } else {
+          if (key === item.key) {
+            console.log('title is set to', title)
+            title = item.title
+          }
+        }
+      })
+      return title;
+    }
+    let key = this.props.location.pathname.split('/').reverse()[0];
+    let title = findTitle(menuList,key);
+    return title;
+  }
+
 
   //toggle full screen(button onclick)
   toggleScreen = () => {
@@ -56,6 +87,7 @@ class Header extends Component {
       content: '退出后需重新登录',
       onOk : () => {//用箭头函数，这样this才能是组件
         this.props.deleteUserInfo();
+        this.props.deleteTitle();
       },
       onCancel : () => {
       },
@@ -78,7 +110,7 @@ class Header extends Component {
         </div>
         <div className='header-bottom'>
           <div className="title">
-            {this.props.location.pathname}
+            {this.props.title || this.state.title}
           </div>
           <div className="today">
           <span className='time'>{time}</span>

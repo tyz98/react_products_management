@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import {Link, withRouter} from 'react-router-dom'
+import {connect} from 'react-redux'
 import { Menu } from 'antd';
+import {createSaveTitleAction} from '../../../redux/actions/menu_action'
+import menuList from '../../../config/menu-config'
 import './css/left_nav.less'
 import logo from './imgs/logo.png'
-import menuList from '../../../config/menu-config'
+
 const { SubMenu } = Menu;
 
 @withRouter
+@connect(
+  state=>({}),
+  {saveTitle:createSaveTitleAction}
+)
 class LeftNav extends Component {
   componentDidMount() {
     console.log('leftnav componentDidMount')
@@ -17,7 +24,7 @@ class LeftNav extends Component {
       const {title,key,icon,path,children} = item;
       if (!children) {
         return (
-          <Menu.Item key={key} icon={icon}>
+          <Menu.Item key={key} icon={icon} onClick={()=>{this.props.saveTitle(title)}}>
             <Link to={path}>{title}</Link>
           </Menu.Item>
         )         
@@ -30,6 +37,8 @@ class LeftNav extends Component {
       }
     })
   }
+
+
   render() {
     console.log('render() left-nav')
     return (
