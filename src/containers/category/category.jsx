@@ -50,7 +50,7 @@ class Category extends Component {
           bordered={true} 
           rowKey='_id' 
           pagination={{pageSize:5}}
-        />;
+        />
       </Card>
     );
   }
