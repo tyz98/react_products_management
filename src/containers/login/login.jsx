@@ -16,12 +16,16 @@ import logo from './imgs/logo.png'
 )
 class Login extends Component {
   componentDidMount() {
+    console.log('login componetDidMount')
     console.log(this.props);
   }
   render() {
-    //若已经登录，则自动跳转到/admin
+    //若已经登录，则自动跳转到/admin/home
+    console.log('login render() start')
     if (this.props.isLogin) {
-      return <Redirect to='/admin'/>;
+      console.log('isLogin=true,直接跳转/admin/home')
+      console.log('login render() end')
+      return <Redirect to='/admin/home'/>;
     }
     const onFinish = async values => {
       const {username, password} = values;
@@ -32,9 +36,9 @@ class Login extends Component {
         //save userInfo to redux(store)
         console.log('先把用户信息存到store')
         this.props.saveUserInfo(response.data);
-        //go to /admin
-        console.log('再用replace跳转')
-        this.props.history.replace('/admin');
+        //go to /admin 不需这步了，因为上一步改了状态重新渲染直接回到render()第一行判断isLogin,就可以自动跳转了
+        // console.log('再用replace跳转')
+        // this.props.history.replace('/admin/home');
       } else {
         message.warning('用户名或密码输入不正确，请重新输入',1);
       }
@@ -44,6 +48,7 @@ class Login extends Component {
     const onFinishFailed = ({values, errorFields, outOfDate}) => {
       console.log('表单数据验证失败',values,errorFields,outOfDate);
     };
+    console.log('login render() end')
     return (
       <div className='login'>
         <header>

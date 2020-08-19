@@ -22,6 +22,7 @@ const {Footer, Sider, Content} = Layout;
 )
 class Admin extends Component {
   componentDidMount() {
+    console.log('admin componentDidMount')
     console.log(this.props.userInfo);
   }
 
@@ -33,6 +34,7 @@ class Admin extends Component {
   }
 
   render() {
+    console.log('render() admin')
     const {isLogin} = this.props.userInfo;
     if (isLogin) {
       return (

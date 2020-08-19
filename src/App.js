@@ -7,13 +7,17 @@ import Login from './containers/login/login'
 import Admin from './containers/admin/admin'
 
 export default class App extends Component {
+  componentDidMount() {
+    console.log('App componentDidMount')
+  }
   render() {
+    console.log('render() App')
     return (
       <div id='app'>
         <Switch>
           <Route path='/login' component={Login}/>
           <Route path='/admin' component={Admin}/>
-          <Redirect to='/admin'/>
+          <Redirect to='/admin/home' />
         </Switch>
       </div>
     )

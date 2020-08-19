@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
-import {Link} from 'react-router-dom'
+import {Link, withRouter} from 'react-router-dom'
 import { Menu } from 'antd';
 import './css/left_nav.less'
 import logo from './imgs/logo.png'
 import menuList from '../../../config/menu-config'
 const { SubMenu } = Menu;
 
+@withRouter
 class LeftNav extends Component {
+  componentDidMount() {
+    console.log('leftnav componentDidMount')
+  }
   //create menu(递归)
   createMenu(tagArr) {
     return tagArr.map((item)=>{
@@ -27,6 +31,7 @@ class LeftNav extends Component {
     })
   }
   render() {
+    console.log('render() left-nav')
     return (
       <div className="menu">
         <div className='title'>
@@ -34,8 +39,8 @@ class LeftNav extends Component {
           商品管理系统
         </div>
         <Menu
-          defaultSelectedKeys={['home']}
-          defaultOpenKeys={['prod_about']}
+          defaultSelectedKeys={[this.props.location.pathname.split('/').reverse()[0]]}
+          defaultOpenKeys={this.props.location.pathname.split('/')}
           mode="inline"
           theme="dark"
         >
