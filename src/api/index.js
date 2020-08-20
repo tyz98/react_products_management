@@ -21,9 +21,18 @@ export const reqWeather = () => {
     });
   })
 }
-
+//category
 export const reqCategoryList = () => myAxios.get(`${BASE_URL}/manage/category/list`);
 
 export const reqCategoryAdd = (value) => myAxios.post(`${BASE_URL}/manage/category/add`,{categoryName:value});
 
 export const reqCategoryUpdate = (categoryId, categoryName) => myAxios.post(`${BASE_URL}/manage/category/update`,{categoryId, categoryName});
+
+//product
+export const reqProductList = (pageNum,pageSize) => myAxios.get(`${BASE_URL}/manage/product/list`,{params:{pageNum,pageSize}})
+
+export const reqProductUpdateStatus = (productId,status) => myAxios.post(`${BASE_URL}/manage/product/updateStatus`,{productId,status});
+
+export const reqProductSearch = (pageNum,pageSize,searchType,keyword) => myAxios.get(`${BASE_URL}/manage/product/search`,{params:{pageNum,pageSize,[searchType]:keyword}})
+
+

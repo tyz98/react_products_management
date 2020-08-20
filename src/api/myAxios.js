@@ -28,7 +28,7 @@ instance.interceptors.request.use((config)=>{
 });
 
 instance.interceptors.response.use((response)=>{
-  //console.log('响应拦截器response',response.data);
+  console.log('响应拦截器response',response.data);
   NProgress.done();
   return response.data;
 },(err)=>{
