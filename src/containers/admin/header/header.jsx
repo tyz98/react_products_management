@@ -66,7 +66,9 @@ class Header extends Component {
       })
       return title;
     }
-    let key = this.props.location.pathname.split('/').reverse()[0];
+    let key;
+    if (this.props.location.pathname.indexOf('product') !== -1) key='product';
+    else key = this.props.location.pathname.split('/').reverse()[0];
     let title = findTitle(menuList,key);
     return title;
   }

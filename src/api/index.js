@@ -35,4 +35,5 @@ export const reqProductUpdateStatus = (productId,status) => myAxios.post(`${BASE
 
 export const reqProductSearch = (pageNum,pageSize,searchType,keyword) => myAxios.get(`${BASE_URL}/manage/product/search`,{params:{pageNum,pageSize,[searchType]:keyword}})
 
+export const reqProductInfo = (productId) => myAxios.get(`${BASE_URL}/manage/product/info`,{params:{productId}})
 

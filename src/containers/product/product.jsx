@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux'
 import {Card,Table,Input,Button,Select,message} from 'antd'
 import {PlusOutlined, SearchOutlined} from '@ant-design/icons'
+import {createSaveProductsAction} from '../../redux/actions/product_action'
 import {reqProductList,reqProductUpdateStatus,reqProductSearch} from '../../api'
 import {PAGE_SIZE} from '../../config'
 const { Option } = Select;
 const { Search } = Input;
 
+@connect(
+  state=>({}),
+  {saveProductList:createSaveProductsAction}
+)
 class Product extends Component {
   state={
     isLoading:true,
@@ -37,6 +43,7 @@ class Product extends Component {
     if(status === 0) {
       //返回prouctList成功
       this.setState({productList:list,total});
+      this.props.saveProductList(list);
     } else {
       message.error('获取商品列表失败')
     }
@@ -112,10 +119,10 @@ class Product extends Component {
       {
         title: '操作',
         key:'operation',
-        render:()=>{
+        render:(item)=>{
           return <div>
-            <Button type='link'>详情</Button>
-            <Button type='link'>修改</Button>
+            <Button type='link' onClick={()=>{this.props.history.push(`/admin/prod_about/product/detail/${item._id}`)}}>详情</Button>
+            <Button type='link' onClick={()=>{this.props.history.push(`/admin/prod_about/product/add_update/${item._id}`)}}>修改</Button>
           </div>
         },
         align:'center',
@@ -142,7 +149,7 @@ class Product extends Component {
               {/* <Input placeholder='关键字' allowClear style={{ margin:'0 20px',width:'30%' }}/>
               <Button type='primary' onClick={this.search}><SearchOutlined/>搜索</Button> */}
             </div>} 
-      extra={<Button type='primary' >
+      extra={<Button type='primary' onClick={()=>{this.props.history.push('/admin/prod_about/product/add_update')}}>
               <PlusOutlined />添加商品
              </Button>}>
         <Table 

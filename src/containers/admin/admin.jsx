@@ -13,6 +13,8 @@ import Role from '../role/role'
 import Bar from '../bar/bar'
 import Line from '../line/line'
 import Pie from '../pie/pie'
+import AddUpdate from '../product/add_update'
+import Detail from '../product/detail'
 import './css/admin.less'
 const {Footer, Sider, Content} = Layout;
 
@@ -48,7 +50,10 @@ class Admin extends Component {
               <Switch>
                 <Route path="/admin/home" component={Home}/>
                 <Route path="/admin/prod_about/category" component={Category}/>
-                <Route path="/admin/prod_about/product" component={Product}/>
+                <Route path="/admin/prod_about/product" component={Product} exact/>
+                <Route path="/admin/prod_about/product/add_update" component={AddUpdate} exact/>
+                <Route path="/admin/prod_about/product/add_update/:id" component={AddUpdate}/>
+                <Route path="/admin/prod_about/product/detail/:id" component={Detail}/>
                 <Route path="/admin/user" component={User}/>
                 <Route path="/admin/role" component={Role}/>
                 <Route path="/admin/charts/bar" component={Bar}/>

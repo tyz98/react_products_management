@@ -48,7 +48,7 @@ class LeftNav extends Component {
           商品管理系统
         </div>
         <Menu
-          defaultSelectedKeys={[this.props.location.pathname.split('/').reverse()[0]]}
+          defaultSelectedKeys={[this.props.location.pathname.indexOf('product')!==-1?'product':this.props.location.pathname.split('/').reverse()[0]]}
           defaultOpenKeys={this.props.location.pathname.split('/')}
           mode="inline"
           theme="dark"
