@@ -5,23 +5,32 @@ import {reqCategoryList,reqCategoryAdd,reqCategoryUpdate} from '../../api'
 
 class Category extends Component {
   state={
-    categoryArr:[],
-    visible:false,
-    operation:'',
-    isLoading:true,
-    categoryToUpdate:{},
+    categoryArr:[],//存储所有类别信息的数组[{_id,name},..]
+    visible:false,//Modal是否显示
+    operation:'',//'add'/'update'
+    isLoading:true,//数据没取回时isLaoding=true
+    categoryToUpdate:{},//存储待修改的分类对象{_id,name}
   }
 
   componentDidMount() {
+    //取category list显示
+    console.log('category componentdidmount')
     this.getCategoryArr();
   }
 
-  //get category list to show
+  //取category list数据并更新状态
   getCategoryArr = async ()=>{
+    console.log('getcategoryarr')
     let result = await reqCategoryList();
-    this.setState({isLoading:false})
+    console.log('set isLoading to false')
+    this.setState({isLoading:false});//请求数据回来后即可关闭loading图标
     const {status,data,msg} = result;
+    //根据响应数据的status属性判断请求list是否成功
     if (status === 0) {
+      //由于服务端在新增分类时会往后加，而我们希望新增分类显示在第一个
+      //所以我们在state.categoryArr中会把新增分类往前加
+      //如果这里不reverse,刷新后重新取list显示时新增的就又会到后面去了
+      console.log('set categoryArr')
       this.setState({categoryArr:data.reverse()});
       //console.log(data)
     } else {
@@ -32,20 +41,24 @@ class Category extends Component {
   //“添加” button onclick
   showAdd = () => {
     this.setState({
-      visible: true,
-      operation: 'add',
+      visible: true, //Modal显示
+      operation: 'add', //操作置为'add',方便后续onFinish时判断发什么请求
     });
   };
 
   //“修改分类” button onclick
   showUpdate = (data) => {
-    //this.formRef.current.setFieldsValue({categoryName:data.categoryName});
+    console.log('shouwupdate,setstate')
     this.setState({
       visible: true,
       operation: 'update',
       categoryToUpdate:data
     });
-    //这一句在Modal出现之前就想用setFieldsValue设置Modal中的Form中的值，要给Modal设置forceRender!!!!!!
+    //上面这句setState之后没有立即render(),所以下面setFieldsValue时Modal还没出现
+    //render()时机待研究！！！！！
+    console.log('setfieldsvalue')
+    //这一句在Modal出现之前就想用setFieldsValue设置Modal中的Form中的值，
+    //所以要给Modal设置forceRender!!!!!!
     this.formRef.current.setFieldsValue({
       categoryName:data.name,
     });
@@ -54,30 +67,33 @@ class Category extends Component {
 
   //modal ok onclick
   handleOk = e => {
-    //submit form
+    //这里只做submit表单的操作，
+    //如果表单验证成功会进入onFinish,失败会进入onFinishedFailed
     this.formRef.current.submit();
   };
 
   //modal cancel onclick
   handleCancel = e => {
     this.setState({
-      visible: false,
+      visible: false,//关闭Modal
     });
-    //reset form
+    //reset form表单
     this.formRef.current.resetFields();
   };
 
+  //创建ref，后面写在Form里
   formRef = React.createRef();
 
+  //表单验证失败
   onFinishFailed = (value)=>{
     console.log('onFinishFailed',value)
     message.error('表单输入有误，请修改后提交！',1)
   }
-
+  //表单验证成功
   onFinish = (value)=>{
     console.log('onFinish,数据为',value)
     let {categoryName} = value
-    //let categoryArr = this.state.categoryArr;
+    //根据operation对输入的categoryName做相应操作
     if(this.state.operation === 'add') {
       this.add(categoryName)
     } else if (this.state.operation === 'update') {
@@ -86,41 +102,48 @@ class Category extends Component {
   }
 
   update = async (categoryId, categoryName)=>{
+    //这里必须用[...]来取，之后修改再setState，不能修改原来的,否则不能render()
     let categoryArr = [...this.state.categoryArr];
+    //发送update请求并得到响应
     let response = await reqCategoryUpdate(categoryId, categoryName);
-    const {status,msg} = response;
+    const {status} = response;
     if (status === 0) {
+      //如果服务器中修改成功，我们也要修改状态中的categoryArr更新界面
       categoryArr.forEach((item)=>{
         if (item._id === categoryId) {
           item.name=categoryName;
         }
       });
-      //set new categoryArr and close modal
+      //把修改后的categoryArr维护到状态中
+      //并关闭Modal
       this.setState({categoryArr,visible: false}); 
       message.success(`修改分类为${categoryName}成功`)
-      //reset form
+      //reset form表单
       this.formRef.current.resetFields();
     } else {
       message.error(`修改分类失败`);
-      //do not reset form and do not close modal
+      //修改失败时不reset表单也不关闭modal(为了方便用户继续尝试)
     }
   }
 
-  add = async (categoryName)=>{
+  add = async (categoryName)=>{//整体逻辑与update类似
+    //这里必须用[...]来取，之后修改再setState，不能修改原来的,否则不能render()
     let categoryArr = [...this.state.categoryArr];
+    //发送add请求并得到响应
     let response = await reqCategoryAdd(categoryName);
     const {status,data,msg} = response;
     if (status === 0) {
-      //add to state
+      //添加
       categoryArr.unshift(data);
-      //set new categoryArr and close modal
+      //把修改后的categoryArr维护到状态中
+      //并关闭Modal
       this.setState({categoryArr,visible: false}); 
       message.success(`添加分类${categoryName}成功`)
-      //reset form
+      //reset form表单
       this.formRef.current.resetFields();
     } else {
       message.error(`添加分类${categoryName}失败，${msg}`);
-      //do not reset form and do not close modal
+      //修改失败时不reset表单也不关闭modal(为了方便用户继续尝试)
     }
   }
 
@@ -138,7 +161,7 @@ class Category extends Component {
       },
       {
         title: '操作',
-        //dataIndex: 'name',
+        //dataIndex: 'name',//不指定的dataIndex的话，下面render()中传入的data就是整个数据对象
         key: 'operation',
         render:(data)=>{return <Button type='link' onClick={()=>{this.showUpdate(data)}}>修改分类</Button>},
         width: '25%',
