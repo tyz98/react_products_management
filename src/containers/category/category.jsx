@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import {Card, Button, Table, message, Modal, Form, Input} from 'antd'
 import {PlusOutlined} from '@ant-design/icons'
 import {reqCategoryList,reqCategoryAdd,reqCategoryUpdate} from '../../api'
+import {createSaveCategoriesAction} from '../../redux/actions/category_action'
 
+@connect(
+  state=>({}),
+  {saveCategories:createSaveCategoriesAction}
+)
 class Category extends Component {
   state={
     categoryArr:[],//存储所有类别信息的数组[{_id,name},..]
@@ -32,6 +38,7 @@ class Category extends Component {
       //如果这里不reverse,刷新后重新取list显示时新增的就又会到后面去了
       console.log('set categoryArr')
       this.setState({categoryArr:data.reverse()});
+      this.props.saveCategories(data);
       //console.log(data)
     } else {
       message.error(msg,1);
