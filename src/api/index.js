@@ -37,3 +37,7 @@ export const reqProductSearch = (pageNum,pageSize,searchType,keyword) => myAxios
 
 export const reqProductInfo = (productId) => myAxios.get(`${BASE_URL}/manage/product/info`,{params:{productId}})
 
+export const reqProductAdd = (productObj) => myAxios.post(`${BASE_URL}/manage/product/add`,productObj);
+
+//picture
+export const reqPictureDelete = (name) => myAxios.post(`${BASE_URL}/manage/img/delete`,{name});
