@@ -15,23 +15,42 @@ const { Search } = Input;
 class Product extends Component {
   state={
     isLoading:true,
-    productList:[],
-    total:0,
-    searchType:'productName',
+    productList:[],//保存本页展示的商品数据
+    total:0,//保存总商品数或满足当前搜索条件的总商品数
+    searchType:'productName',//搜索方式
+    current:1,//当前亮起的页码
     // lastSearch:{},
   }
+
   componentDidMount() {
-    this.getProductList(1);
+    this.getProductList(1);//初始化显示第一页的商品
   }
 
+  //搜索Button onClick
+  search = (value)=>{
+    //这里isSearch和lastSearch直接挂在this上，放在state中state不能马上改变,进入getProductList中也读不出isSearch应该的值
+    if (value==='') {
+      this.isSearch=false;
+      //req
+      this.getProductList(1);
+    } else {
+      this.isSearch = true;
+      //存储点击搜索框时的搜索类型和关键字
+      this.lastSearch = {searchType:this.state.searchType,keyword:value};
+      //req
+      this.getProductList(1);
+    }
+  }
+
+  //获取某页商品数据（全部数据/搜索数据）
   getProductList = async (pageNum)=>{
-    this.setState({isLoading:true,current:pageNum});
+    this.setState({isLoading:true,current:pageNum});//请求前先显示loading，并把请求的页码亮起
     let response;
+    //根据isSearch判断请求全部数据还是请求搜索数据
     if(!this.isSearch) {
-      console.log('not search')
       response = await reqProductList(pageNum,PAGE_SIZE);
     } else {
-      console.log('issearch')
+      //从this.lastSearch中读出点击搜索框时的搜索类型和关键字
       const {searchType,keyword} = this.lastSearch;
       response = await reqProductSearch(pageNum,PAGE_SIZE,searchType,keyword)
     }
@@ -39,45 +58,37 @@ class Product extends Component {
     console.log('response=',response)
     const {status,data} = response;
     const {list,total} = data;
-    this.setState({isLoading:false})
+    this.setState({isLoading:false});//得到数据后取消loading
     if(status === 0) {
       //返回prouctList成功
-      this.setState({productList:list,total});
-      this.props.saveProductList(list);
+      this.setState({productList:list,total});//更新状态中的本页商品列表和总商品数据
+      this.props.saveProductList(list);//把本页商品列表存在redux中，方便查看详情时直接取本页数据匹配
     } else {
+      //返回prouctList失败
       message.error('获取商品列表失败')
     }
   }
 
+  //更新产品上架/上架
   updateProductStatus = async (productId,status)=>{
     const response = await reqProductUpdateStatus(productId,status);
     console.log('reponse=',response)
     if(response.status === 0) {
+      //拷贝state中的productList,并更改相应数据的status
       let productList = [...this.state.productList];
       productList.forEach((item)=>{
         if(item._id === productId) {
           item.status = status;
         }
       });
-      this.setState({productList});
+      this.setState({productList});//更新状态
       message.success(`商品${status===1?'上架':'下架'}成功`);
     } else {
       message.error(`商品${status===1?'上架':'下架'}失败`);
     }
   }
 
-  search = (value)=>{
-    if (value==='') {
-      this.isSearch=false;
-      this.getProductList(1);
-    } else {
-      this.isSearch = true;
-      this.lastSearch = {searchType:this.state.searchType,keyword:value};
-      console.log('lastsearch',this.lastSearch)
-      //this.setState({lastSearch});
-      this.getProductList(1);
-    }
-  }
+
 
   render() {
     const columns = [
@@ -95,14 +106,14 @@ class Product extends Component {
         title: '价格',
         dataIndex: 'price',
         key: 'price',
-        render:(p)=>'￥'+p,
+        render:(p)=>'￥'+p,//加‘￥’
         align:'center',
       },
       {
         title: '状态',
         //dataIndex: 'status',
         key: 'status',
-        render:(prod)=>{
+        render:(prod)=>{//根据status显示不同按钮和状态
             const {_id,status} = prod;
             return <div>
                     <Button 
@@ -112,14 +123,13 @@ class Product extends Component {
                     </Button>
                     <div>{status===1?'在售':'已下架'}</div>
                   </div>
-
         },
         align:'center',
       },
       {
         title: '操作',
         key:'operation',
-        render:(item)=>{
+        render:(item)=>{//编程式路由，点击详情/修改跳转，并携带参数
           return <div>
             <Button type='link' onClick={()=>{this.props.history.push(`/admin/prod_about/product/detail/${item._id}`)}}>详情</Button>
             <Button type='link' onClick={()=>{this.props.history.push(`/admin/prod_about/product/add_update/${item._id}`)}}>修改</Button>
@@ -158,7 +168,7 @@ class Product extends Component {
         rowKey='_id'
         loading={isLoading}
         bordered
-        pagination={{current,total,pageSize:PAGE_SIZE,onChange:(currentPage)=>{this.getProductList(currentPage)}}}/>
+        pagination={{current,total,pageSize:PAGE_SIZE,onChange:(currentPage)=>{this.getProductList(currentPage)}}}/>{/*点击页码时请求该页数据*/}
       </Card>
     );
   }
