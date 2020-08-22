@@ -4,6 +4,7 @@ import { Card, Button, Form, Input, Select, message } from 'antd';
 import {ArrowLeftOutlined} from '@ant-design/icons'
 import {reqCategoryList,reqProductAdd} from '../../api'
 import PicturesWall from './pictures_wall'
+import RichTextEditor from './rich_text_editor'
 const {Item} = Form;
 const {Option} = Select;
 
@@ -19,6 +20,7 @@ class AddUpdate extends Component {
 
   //ref
   picturesRef = React.createRef();
+  richTextRef = React.createRef();
 
   componentDidMount() {
     const {categories} = this.props;
@@ -43,10 +45,13 @@ class AddUpdate extends Component {
     console.log('this.picturesRef',this.picturesRef)
     //使用ref获得pictureswall上的方法，得到所有图片名(父组件要使用子组件的方法，可用ref！！！不能把方法放到redux中)
     const imgs = this.picturesRef.current.getImgNames();
-    const response = await reqProductAdd({...values,imgs});
+    const detail = this.richTextRef.current.getRichText();
+    const response = await reqProductAdd({...values,imgs,detail});
     const {status,msg} = response;
     if (status === 0) {
       message.success('添加商品成功',1);
+      //添加成功则回到商品管理页面
+      this.props.history.replace('/admin/prod_about/product')
     } else {
       message.error('添加商品失败,'+msg,1);
     }
@@ -99,8 +104,8 @@ class AddUpdate extends Component {
             {/**antd中加ref，与之前用React.createRef建立的属性关联，用那个属性就可以使用这个实例中定义的方法 */}
             <PicturesWall ref={this.picturesRef}/>
           </Item>
-          <Item label="商品详情" name='detail'>
-            富文本编辑器
+          <Item label="商品详情" name='detail' wrapperCol={{ span: 12 }}>
+            <RichTextEditor ref={this.richTextRef}/>
           </Item>
           <Item {...tailLayout}>
             <Button type="primary" htmlType="submit">
