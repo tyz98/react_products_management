@@ -50,3 +50,6 @@ export const reqRoleList = () => myAxios.get(`${BASE_URL}/manage/role/list`);
 export const reqRoleAdd = (roleName) => myAxios.post(`${BASE_URL}/manage/role/add`,{roleName});
 
 export const reqRoleAuth = (authInfo) => myAxios.post(`${BASE_URL}/manage/role/update`,{...authInfo,auth_time:Date.now()});
+
+//user
+export const reqUserList = () => myAxios.get(`${BASE_URL}/manage/user/list`);
