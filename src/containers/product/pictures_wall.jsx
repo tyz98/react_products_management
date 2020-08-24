@@ -74,6 +74,18 @@ class PicturesWall extends Component {
     })
     return imgs;
   }
+
+  setFileList = (imgNames)=>{
+    let fileList = [];
+    imgNames.forEach((item,index)=>{
+      fileList.push({
+        uid:index,
+        name:item,
+        url:`${BASE_URL}/upload/${item}`
+      })
+    })
+    this.setState({fileList});
+  }
   
   render() {
     const { previewVisible, previewImage, fileList, previewTitle } = this.state;
