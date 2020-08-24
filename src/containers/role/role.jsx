@@ -1,24 +1,31 @@
 import React, { Component } from 'react';
+import {connect} from 'react-redux'
 import {Button, Card, Table, Modal, Input, Form, message,Tree} from 'antd'
 import { PlusOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs'
-import {reqRoleList, reqRoleAdd} from '../../api'
+import {reqRoleList, reqRoleAdd, reqRoleAuth} from '../../api'
+import menuList from '../../config/menu-config'
 const {Item} = Form;
 
+@connect(
+  state=>({username:state.userInfo.user.username}),
+  {}
+)
 class Role extends Component {
   state = { 
     visibleAdd: false,
     visibleAuth: false,
     roleList:[],
-    expandedKeys:[],
     checkedKeys:[],
-    autoExpandParent:true
+    menuList,
+    _id:'',
   };
 
   addFormRef = React.createRef()
 
   componentDidMount() {
     this.getRoleList();
+    this.setState({menuList:[{title:"全部权限",key:"top",children:menuList}]});
   }
   
   getRoleList = async ()=>{
@@ -35,12 +42,17 @@ class Role extends Component {
     this.addFormRef.current.submit();
   };
 
-  handleAddCancel = e => {
-    console.log(e);
-    this.setState({
-      visibleAdd: false,
-    });
-  };
+  handleAuthOk = async ()=>{
+    const {_id,checkedKeys} = this.state;
+    const response = await reqRoleAuth({_id,menus:checkedKeys,auth_name:this.props.username});
+    if (response.status === 0) {
+      this.getRoleList();
+      message.success('授权成功',1);
+      this.setState({checkedKeys:[],visibleAuth:false});
+    } else {
+      message.error('授权失败',1);
+    }
+  }
 
   onAddFinish = async (values)=>{
     const {roleName} = values
@@ -58,8 +70,14 @@ class Role extends Component {
     message.error('请检查输入')
   }
 
+  showAuthModal = (_id)=>{
+    this.setState({visibleAuth: true, _id});
+    const role = this.state.roleList.find((item)=>item._id===_id);
+    this.setState({checkedKeys:role.menus})
+  }
   render() {
-    const {roleList,expandedKeys,checkedKeys,selectedKeys,autoExpandParent,visibleAdd,visibleAuth} = this.state;
+    const {roleList,checkedKeys,visibleAdd,visibleAuth,menuList} = this.state;
+    console.log('roleList',roleList)
     const columns = [
       {
         title: '角色名称',
@@ -76,105 +94,23 @@ class Role extends Component {
         title: '授权时间',
         dataIndex: 'auth_time',
         key: 'auth_time',
+        render:(time)=> time ? dayjs(time).format('YYYY年MM月DD日 HH:mm:ss') : ''//如果无auth_time则显示空字符串，否则会传入undefined,dayjs()默认读取当前时间
       },
       {
         title: '授权人',
         dataIndex: 'auth_name',
         key: 'auth_name',
-        render:(time)=>time ? (time)=> dayjs(time).format('YYYY年MM月DD日 HH:mm:ss') : '' //如果无auth_time则显示空字符串，否则会传入undefined,dayjs()默认读取当前时间
       },
       {
         title: '操作',
         key:'operation',
         render:(item)=>{
-          return <Button type='link' onClick={() => {this.setState({visibleAuth: true,})}}>设置权限</Button>
+          return <Button type='link' onClick={() => {this.showAuthModal(item._id)}}>设置权限</Button>
         },
         align:'center',
       }
     ];
-    const treeData = [
-      {
-        title: '0-0',
-        key: '0-0',
-        children: [
-          {
-            title: '0-0-0',
-            key: '0-0-0',
-            children: [
-              {
-                title: '0-0-0-0',
-                key: '0-0-0-0',
-              },
-              {
-                title: '0-0-0-1',
-                key: '0-0-0-1',
-              },
-              {
-                title: '0-0-0-2',
-                key: '0-0-0-2',
-              },
-            ],
-          },
-          {
-            title: '0-0-1',
-            key: '0-0-1',
-            children: [
-              {
-                title: '0-0-1-0',
-                key: '0-0-1-0',
-              },
-              {
-                title: '0-0-1-1',
-                key: '0-0-1-1',
-              },
-              {
-                title: '0-0-1-2',
-                key: '0-0-1-2',
-              },
-            ],
-          },
-          {
-            title: '0-0-2',
-            key: '0-0-2',
-          },
-        ],
-      },
-      {
-        title: '0-1',
-        key: '0-1',
-        children: [
-          {
-            title: '0-1-0-0',
-            key: '0-1-0-0',
-          },
-          {
-            title: '0-1-0-1',
-            key: '0-1-0-1',
-          },
-          {
-            title: '0-1-0-2',
-            key: '0-1-0-2',
-          },
-        ],
-      },
-      {
-        title: '0-2',
-        key: '0-2',
-      },
-    ];
-    
-      // const [expandedKeys, setExpandedKeys] = useState(['0-0-0', '0-0-1']);
-      // const [checkedKeys, setCheckedKeys] = useState(['0-0-0']);
-      // const [selectedKeys, setSelectedKeys] = useState([]);
-      // const [autoExpandParent, setAutoExpandParent] = useState(true);
-
-      const onExpand = expandedKeys => {
-        console.log('onExpand', expandedKeys); // if not set autoExpandParent to false, if children expanded, parent can not collapse.
-        // or, you can remove all expanded children keys.
-        this.setState({expandedKeys});
-        this.setState({autoExpandParent:false});
-      };
-    
+      
       const onCheck = checkedKeys => {
         console.log('onCheck', checkedKeys);
         this.setState({checkedKeys});
@@ -191,13 +127,14 @@ class Role extends Component {
           columns={columns} 
           rowKey='_id'
           bordered
-          />{/*点击页码时请求该页数据*/}
+          pagination={{pageSize:5,showQuickJumper:true}}
+          />
         </Card>
         <Modal
           title="新增角色"
           visible={visibleAdd}
           onOk={this.handleAddOk}
-          onCancel={this.handleAddCancel}
+          onCancel={() => {this.setState({visibleAdd: false})}}
           forceRender
         >
           <Form ref={this.addFormRef} onFinish={this.onAddFinish} onFinishFailed={this.onAddFinishFailed}>
@@ -210,17 +147,15 @@ class Role extends Component {
           title="权限管理"
           visible={visibleAuth}
           onOk={this.handleAuthOk}
-          onCancel={this.handleAuthCancel}
+          onCancel={() => {this.setState({visibleAuth: false})}}
           forceRender
         >
           <Tree
             checkable
-            onExpand={onExpand}
-            expandedKeys={expandedKeys}
-            autoExpandParent={autoExpandParent}
             onCheck={onCheck}
             checkedKeys={checkedKeys}
-            treeData={treeData}
+            treeData={menuList}
+            defaultExpandAll
           />
         </Modal>
       </div>
