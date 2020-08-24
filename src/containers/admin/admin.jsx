@@ -46,7 +46,7 @@ class Admin extends Component {
           </Sider>
           <Layout>
             <Header />
-            <Content className='content' style={{'min-height':'auto'}}>
+            <Content className='content' style={{minHeight:'auto'}}>
               <Switch>
                 <Route path="/admin/home" component={Home}/>
                 <Route path="/admin/prod_about/category" component={Category}/>

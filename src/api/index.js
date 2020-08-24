@@ -39,5 +39,13 @@ export const reqProductInfo = (productId) => myAxios.get(`${BASE_URL}/manage/pro
 
 export const reqProductAdd = (productObj) => myAxios.post(`${BASE_URL}/manage/product/add`,productObj);
 
+export const reqProductUpdate = (productObj) => myAxios.post(`${BASE_URL}/manage/product/update`,productObj);
+
 //picture
 export const reqPictureDelete = (name) => myAxios.post(`${BASE_URL}/manage/img/delete`,{name});
+
+//role
+export const reqRoleList = () => myAxios.get(`${BASE_URL}/manage/role/list`);
+
+export const reqRoleAdd = (roleName) => myAxios.post(`${BASE_URL}/manage/role/add`,{roleName});
+

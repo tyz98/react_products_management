@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {connect} from 'react-redux'
 import { Card, Button, Form, Input, Select, message } from 'antd';
 import {ArrowLeftOutlined} from '@ant-design/icons'
-import {reqCategoryList,reqProductAdd, reqProductInfo} from '../../api'
+import {reqCategoryList,reqProductAdd, reqProductInfo, reqProductUpdate} from '../../api'
 import PicturesWall from './pictures_wall'
 import RichTextEditor from './rich_text_editor'
 const {Item} = Form;
@@ -94,14 +94,20 @@ class AddUpdate extends Component {
     //使用ref获得pictureswall上的方法，得到所有图片名(父组件要使用子组件的方法，可用ref！！！不能把方法放到redux中)
     const imgs = this.picturesRef.current.getImgNames();
     const detail = this.richTextRef.current.getRichText();
-    const response = await reqProductAdd({...values,imgs,detail});
+    const {operation} = this.state; 
+    let response;
+    if(operation==='add') {
+      response = await reqProductAdd({...values,imgs,detail});
+    } else {
+      response = await reqProductUpdate({...values,imgs,detail,_id:this.id});
+    }
     const {status,msg} = response;
     if (status === 0) {
-      message.success('添加商品成功',1);
+      message.success(`${operation==='add'?'添加':'修改'}商品成功`,1);
       //添加成功则回到商品管理页面
       this.props.history.replace('/admin/prod_about/product')
     } else {
-      message.error('添加商品失败,'+msg,1);
+      message.error(`${operation==='add'?'添加':'修改'}商品失败，`+msg,1);
     }
   }
 
@@ -114,12 +120,12 @@ class AddUpdate extends Component {
     console.log('ref=',ref)
   }
   render() {
-    console.log('in render(), state=',this.state);
+    const {categories,operation,isLoading} = this.state;
     const title = <div>
                     <Button type='link' size='small' onClick={()=>{this.props.history.goBack()}}>
                       <ArrowLeftOutlined/>
                     </Button>
-                    商品添加
+                    {operation === 'add'? "商品添加":"商品修改"}
                   </div>
     const layout = {
       labelCol: { span: 4 },
@@ -129,7 +135,7 @@ class AddUpdate extends Component {
       wrapperCol: { offset: 6},
     };
 
-    const {categories,isLoading} = this.state;
+    
     return (
       <Card title={title} >
         <Form {...layout}  onFinish={this.onFinish} onFinishFailed={this.onFinishFailed} ref={this.formRef}>
