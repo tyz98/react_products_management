@@ -53,3 +53,5 @@ export const reqRoleAuth = (authInfo) => myAxios.post(`${BASE_URL}/manage/role/u
 
 //user
 export const reqUserList = () => myAxios.get(`${BASE_URL}/manage/user/list`);
+
+export const reqUserAdd = (userObj) => myAxios.post(`${BASE_URL}/manage/user/add`,userObj);

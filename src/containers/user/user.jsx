@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
-import {reqUserList} from '../../api'
-import { message,Card,Input,Form,Modal,Table,Button } from 'antd';
-import {PlusOutlined} from '@ant-design/icons'
+import dayjs from 'dayjs'
+import { message,Card,Input,Form,Modal,Table,Button, Select } from 'antd';
+import {PlusOutlined} from '@ant-design/icons';
+import {reqUserList, reqUserAdd} from '../../api'
+const {Item} = Form;
+const {Option} = Select;
+
 class User extends Component {
   state={
     operation:'add',
@@ -9,6 +13,9 @@ class User extends Component {
     roleList:[],
     visible:false
   }
+
+  formRef = React.createRef();
+
   componentDidMount() {
     //请求用户列表
     this.getUserList();
@@ -20,7 +27,7 @@ class User extends Component {
     console.log('response=',response)
     const {status,data} = response;
     if (status === 0) {
-      this.setState({userList:data.users,roleList:data.roles})
+      this.setState({userList:data.users.reverse(),roleList:data.roles})
     } else {
       message.error('获取用户信息失败',1)
     }
@@ -28,15 +35,40 @@ class User extends Component {
 
   //“创建用户”按钮的onClick回调
   showAdd = ()=>{
-    this.setState({operation:'add',visible:true});
+    this.formRef.current.resetFields();//清空上一次的内容
+    this.setState({operation:'add',visible:true});//显示Modal
   }
   //“修改”按钮的onClick回调
   showUpdate = ()=>{
     this.setState({operation:'update',visible:true});
   }
+  //Modal中确认按钮的onClick回调
+  handleOk = ()=>{
+    this.formRef.current.submit();
+  }
   //Modal中取消按钮的onClick回调
   handleCancel = (values)=>{
     this.setState({visible:false})
+  }
+  //表单验证成功的回调
+  onFinish = async (values)=>{
+    const {status,data,msg} = await reqUserAdd(values);
+    console.log('status',status)
+    console.log('data',data)
+    console.log('msg',msg)
+    if(status === 0) {
+      let userList = [...this.state.userList];
+      console.log(userList)
+      userList.unshift(data);
+      this.setState({visible:false,userList});
+      message.success(`添加用户${values.username}成功！`,1)
+    } else {
+      message.error(`添加用户失败，${msg}`,1)
+    }
+  }
+  //表单验证失败的回调
+  onFinishFailed = ()=>{
+    message.error('请检查输入',1);
   }
 
   render() {
@@ -63,6 +95,7 @@ class User extends Component {
         title: '注册时间',
         dataIndex: 'create_time',
         key: 'create_time',
+        render:(time)=>dayjs(time).format('YYYY年MM月DD日 HH:mm:ss')
       },
       {
         title: '所属角色',
@@ -84,7 +117,7 @@ class User extends Component {
     ];
     return (
       <div>
-        <Card title={<Button type="primary" onClick={this.showAdd}><PlusOutlined />创建用户</Button>} >
+        <Card title={<Button type="primary" onClick={this.showAdd}><PlusOutlined />添加用户</Button>} >
           <Table 
             dataSource={userList} 
             columns={columns} 
@@ -103,25 +136,123 @@ class User extends Component {
           forceRender
         >
             <Form
-              name="userModify"
-              ref={this.formRef}
-              //initialValues={operation === 'update' ? { categoryName: modalValue}:{}}
-              onFinish={this.onFinish}
-              onFinishFailed={this.onFinishFailed}
+            name="user_form"
+            onFinish={this.onFinish} 
+            onFinishFailed={this.onFinishFailed}
+            ref={this.formRef}
+            labelCol={{span: 4 }}
+            wrapperCol={{span: 16}}
+          >
+            <Item
+              label='用户名'
+              name="username"
+              rules={[
+                {
+                  required: true,
+                  message: '请输入用户名!',
+                },
+                {
+                  max: 12,
+                  message:'用户名长度不可超过12位!'
+                },
+                {
+                  min: 4,
+                  message:'用户名长度不可少于4位!'
+                },
+                {
+                  pattern:/^\w+$/,
+                  message:'用户名只能由数字、字母、下划线组成!'
+                },
+              ]}
             >
-                <Form.Item
-                  name="username"
-                  rules={[{ required: true, message: '用户名不能为空!' }]}
-                >
-                  <Input placeholder="用户名" />
-                </Form.Item>
-                <Form.Item
-                  name="password"
-                  rules={[{ required: true, message: '密码不能为空!' }]}
-                >
-                  <Input placeholder="密码" />
-                </Form.Item>
-            </Form>
+              <Input placeholder="用户名" />
+            </Item>
+            <Item
+              label='密码'
+              name="password"
+              rules={[{
+                required: true,
+                message: '密码不能为空!',
+              },
+                {
+                  validator:(rule, value, callback)=>{
+                    try {
+                      if (!(/^\w+$/.test(value))) {
+                        return Promise.reject('密码只能由数字、字母、下划线组成！');
+                      } else if (value.length < 4) {
+                        return Promise.reject('密码不可少于4位！');
+                      } else if (value.length > 12) {
+                        return Promise.reject('密码不可超过12位！');
+                      } 
+                      return Promise.resolve();
+                    } catch(err) {
+                      callback(err);
+                    }
+                  }
+                },
+              ]}
+            >
+              <Input type="password" placeholder="密码"/>
+            </Item>
+            <Item
+              label='手机号'
+              name="phone"
+              rules={[{
+                required: true,
+                message: '手机号不能为空!',
+              },
+                {
+                  validator:(rule, value, callback)=>{
+                    try {
+                      if (!(/^\d{11}$/.test(value))) {
+                        return Promise.reject('手机号只能由11位数字组成！');
+                      } 
+                      return Promise.resolve();
+                    } catch(err) {
+                      callback(err);
+                    }
+                  }
+                },
+              ]}
+            >
+              <Input placeholder="手机号"/>
+            </Item>
+            <Item
+              label='邮箱'
+              name="email"
+              rules={[{
+                required: true,
+                message: '邮箱不能为空!',
+              },
+                {
+                  validator:(rule, value, callback)=>{
+                    try {
+                      if (!(/^[A-Za-z0-9]+([_\.][A-Za-z0-9]+)*@([A-Za-z0-9\-]+\.)+[A-Za-z]{2,6}$/.test(value))) {
+                        return Promise.reject('邮箱格式不正确！');
+                      } 
+                      return Promise.resolve();
+                    } catch(err) {
+                      callback(err);
+                    }
+                  }
+                },
+              ]}
+            >
+              <Input placeholder="邮箱"/>
+            </Item>
+            <Item 
+              label='角色'
+              name='role_id'
+              rules={[{required:true,message:'请选择角色！'}]}
+            >
+              <Select defaultValue=''>
+                <Option value=''>请选择角色</Option>
+                {
+                  roleList.map((item)=><Option value={item._id} key={item._id}>{item.name}</Option>)
+                }
+              </Select>
+            </Item>
+          </Form>
         </Modal>
       </div>
     );
