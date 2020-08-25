@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import dayjs from 'dayjs'
 import { message,Card,Input,Form,Modal,Table,Button, Select } from 'antd';
 import {PlusOutlined} from '@ant-design/icons';
-import {reqUserList, reqUserAdd} from '../../api'
+import {reqUserList, reqUserAdd, reqUserUpdate} from '../../api'
 const {Item} = Form;
 const {Option} = Select;
 
@@ -11,7 +11,8 @@ class User extends Component {
     operation:'add',
     userList:[],
     roleList:[],
-    visible:false
+    visible:false,
+    _id:''
   }
 
   formRef = React.createRef();
@@ -39,8 +40,9 @@ class User extends Component {
     this.setState({operation:'add',visible:true});//显示Modal
   }
   //“修改”按钮的onClick回调
-  showUpdate = ()=>{
-    this.setState({operation:'update',visible:true});
+  showUpdate = (data)=>{
+    this.formRef.current.setFieldsValue(data);//回显该条数据的内容
+    this.setState({operation:'update',visible:true,_id:data._id});//保存待update的id
   }
   //Modal中确认按钮的onClick回调
   handleOk = ()=>{
@@ -50,22 +52,33 @@ class User extends Component {
   handleCancel = (values)=>{
     this.setState({visible:false})
   }
+
   //表单验证成功的回调
   onFinish = async (values)=>{
-    const {status,data,msg} = await reqUserAdd(values);
-    console.log('status',status)
-    console.log('data',data)
-    console.log('msg',msg)
+    console.log('values=',values)
+    const {operation} = this.state;
+    let response;
+    //根据operation不同，发送添加/修改用户的请求
+    if (operation === 'add') response = await reqUserAdd(values);
+    else response = await reqUserUpdate({...values,_id:this.state._id});
+    const {status,data,msg} = response;
     if(status === 0) {
       let userList = [...this.state.userList];
       console.log(userList)
-      userList.unshift(data);
-      this.setState({visible:false,userList});
-      message.success(`添加用户${values.username}成功！`,1)
+      if (operation=== 'add') userList.unshift(data);//若是添加用户，则在userList的最前面添加数据
+      else {//若是修改用户，则把userList中与修改的id匹配的user替换成返回的数据
+        userList = userList.map((item)=>{
+          if (item._id === this.state._id) return data;
+          else return item;//注意这句 不更改也一定要返回！
+        });
+      }
+      this.setState({visible:false,userList});//更新userList并关闭Modal
+      message.success(`${operation==='add'?'添加':'修改'}用户${values.username}成功！`,1)
     } else {
-      message.error(`添加用户失败，${msg}`,1)
+      message.error(`${operation==='add'?'添加':'修改'}用户失败，${msg}`,1)
     }
   }
+
   //表单验证失败的回调
   onFinishFailed = ()=>{
     message.error('请检查输入',1);
@@ -110,7 +123,7 @@ class User extends Component {
         title: '操作',
         //dataIndex: 'operation',//不指定的dataIndex的话，下面render()中传入的data就是整个数据对象
         key: 'operation',
-        render:(data)=>{return <Button type='link' onClick={()=>{this.showUpdate(data)}}>修改</Button>},
+        render:(data)=>{return <Button type='link' onClick={()=>this.showUpdate(data)}>修改</Button>},
         // width: '25%',
         // align: 'center'
       },
@@ -167,33 +180,37 @@ class User extends Component {
             >
               <Input placeholder="用户名" />
             </Item>
-            <Item
-              label='密码'
-              name="password"
-              rules={[{
-                required: true,
-                message: '密码不能为空!',
-              },
-                {
-                  validator:(rule, value, callback)=>{
-                    try {
-                      if (!(/^\w+$/.test(value))) {
-                        return Promise.reject('密码只能由数字、字母、下划线组成！');
-                      } else if (value.length < 4) {
-                        return Promise.reject('密码不可少于4位！');
-                      } else if (value.length > 12) {
-                        return Promise.reject('密码不可超过12位！');
-                      } 
-                      return Promise.resolve();
-                    } catch(err) {
-                      callback(err);
-                    }
-                  }
+            {
+              operation==='update'? undefined : 
+              (<Item
+                label='密码'
+                name="password"
+                rules={[{
+                  required: true,
+                  message: '密码不能为空!',
                 },
-              ]}
-            >
-              <Input type="password" placeholder="密码"/>
-            </Item>
+                  {
+                    validator:(rule, value, callback)=>{
+                      try {
+                        if (!(/^\w+$/.test(value))) {
+                          return Promise.reject('密码只能由数字、字母、下划线组成！');
+                        } else if (value.length < 4) {
+                          return Promise.reject('密码不可少于4位！');
+                        } else if (value.length > 12) {
+                          return Promise.reject('密码不可超过12位！');
+                        } 
+                        return Promise.resolve();
+                      } catch(err) {
+                        callback(err);
+                      }
+                    }
+                  },
+                ]}//若是更新操作则不显示密码
+              >
+                <Input type="password" placeholder="密码"/>
+              </Item>)
+            }
+            
             <Item
               label='手机号'
               name="phone"
